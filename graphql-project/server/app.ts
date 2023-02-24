@@ -1,6 +1,7 @@
 import express from "express";
 import { graphqlHTTP } from "express-graphql";
 import schema from "./schema/schema";
+import testSchema from "./schema/types_schema";
 
 const app = express();
 
@@ -8,7 +9,7 @@ app.use(
   "/graphql",
   graphqlHTTP({
     graphiql: true,
-    schema: schema,
+    schema: testSchema,
   })
 );
 
