@@ -7,9 +7,13 @@ import {
   GraphQLString,
 } from "graphql";
 import _ from "lodash";
+import User from "../model/user";
+import Hobby from "../model/hobby";
+import Post from "../model/post";
+import post from "../model/post";
 
 //dummy data
-let usersData = [
+/* let usersData = [
   { id: "1", name: "Name1", age: 18, profession: "Programmer" },
   { id: "13", name: "Name2", age: 19, profession: "Teacher" },
   { id: "211", name: "Name3", age: 20, profession: "Baker" },
@@ -50,7 +54,7 @@ let postsData = [
   { id: "3", comment: "How to Change the World", userId: "19" },
   { id: "4", comment: "How to Change the World", userId: "211" },
   { id: "5", comment: "How to Change the World", userId: "1" },
-];
+]; */
 
 //create types
 const UserType = new GraphQLObjectType({
@@ -64,13 +68,13 @@ const UserType = new GraphQLObjectType({
     posts: {
       type: new GraphQLList(PostType),
       resolve(parent, args) {
-        return _.filter(postsData, { userId: parent.id });
+        return Post.find({ userId: parent.id });
       },
     },
     hobbies: {
       type: new GraphQLList(HobbyType),
       resolve(parent, args) {
-        return _.filter(hobbiesData, { userId: parent.id });
+        return Hobby.find({ userId: parent.id });
       },
     },
   }),
@@ -86,7 +90,7 @@ const HobbyType: any = new GraphQLObjectType({
     user: {
       type: UserType,
       resolve(parent, args) {
-        return _.find(usersData, { id: parent.userId });
+        return User.findById(parent.userId);
       },
     },
   }),
@@ -101,7 +105,7 @@ const PostType: any = new GraphQLObjectType({
     user: {
       type: UserType,
       resolve(parent, args) {
-        return _.find(usersData, { id: parent.userId });
+        return User.findById(parent.userId);
       },
     },
   }),
@@ -117,39 +121,39 @@ const RootQuery = new GraphQLObjectType({
         id: { type: GraphQLString },
       },
       resolve(parent, args) {
-        return _.find(usersData, { id: args.id });
+        return User.findById(args.id);
       },
     },
     users: {
       type: new GraphQLList(UserType),
       resolve(parent, args) {
-        return usersData;
+        return User.find({});
       },
     },
     hobby: {
       type: HobbyType,
       args: { id: { type: GraphQLID } },
       resolve(parent, args) {
-        return _.find(hobbiesData, { id: args.id });
+        return Hobby.findById(args.id);
       },
     },
     hobbies: {
       type: new GraphQLList(HobbyType),
       resolve(parent, args) {
-        return hobbiesData;
+        return Hobby.find({ id: args.userId });
       },
     },
     post: {
       type: PostType,
       args: { id: { type: GraphQLID } },
       resolve(parent, args) {
-        return _.find(postsData, { id: args.id });
+        return Post.findById(args.id);
       },
     },
     posts: {
       type: new GraphQLList(PostType),
       resolve(parent, args) {
-        return postsData;
+        return Post.find({});
       },
     },
   },
@@ -167,12 +171,12 @@ const Mutation = new GraphQLObjectType({
         profession: { type: GraphQLString },
       },
       resolve(parent, args) {
-        let user = {
+        let user = new User({
           name: args.name,
           age: args.age,
           profession: args.profession,
-        };
-        return user;
+        });
+        return user.save();
       },
     },
     createPost: {
@@ -182,11 +186,11 @@ const Mutation = new GraphQLObjectType({
         userId: { type: GraphQLID },
       },
       resolve(parent, args) {
-        let post = {
+        let post = new Post({
           comment: args.comment,
           userId: args.userId,
-        };
-        return post;
+        });
+        return post.save();
       },
     },
     createHobby: {
@@ -197,12 +201,12 @@ const Mutation = new GraphQLObjectType({
         userId: { type: GraphQLString },
       },
       resolve(parent, args) {
-        let hobby = {
+        let hobby = new Hobby({
           title: args.title,
           description: args.description,
           userId: args.userId,
-        };
-        return hobby;
+        });
+        return hobby.save();
       },
     },
   },
