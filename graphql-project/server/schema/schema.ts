@@ -2,6 +2,7 @@ import {
   GraphQLID,
   GraphQLInt,
   GraphQLList,
+  GraphQLNonNull,
   GraphQLObjectType,
   GraphQLSchema,
   GraphQLString,
@@ -166,9 +167,9 @@ const Mutation = new GraphQLObjectType({
     createUser: {
       type: UserType,
       args: {
-        name: { type: GraphQLString },
-        age: { type: GraphQLInt },
-        profession: { type: GraphQLString },
+        name: { type: new GraphQLNonNull(GraphQLString) },
+        age: { type: new GraphQLNonNull(GraphQLInt) },
+        profession: { type: new GraphQLNonNull(GraphQLString) },
       },
       resolve(parent, args) {
         let user = new User({
@@ -182,8 +183,8 @@ const Mutation = new GraphQLObjectType({
     createPost: {
       type: PostType,
       args: {
-        comment: { type: GraphQLString },
-        userId: { type: GraphQLID },
+        comment: { type: new GraphQLNonNull(GraphQLString) },
+        userId: { type: new GraphQLNonNull(GraphQLID) },
       },
       resolve(parent, args) {
         let post = new Post({
@@ -196,9 +197,9 @@ const Mutation = new GraphQLObjectType({
     createHobby: {
       type: HobbyType,
       args: {
-        title: { type: GraphQLString },
-        description: { type: GraphQLString },
-        userId: { type: GraphQLString },
+        title: { type: new GraphQLNonNull(GraphQLString) },
+        description: { type: new GraphQLNonNull(GraphQLString) },
+        userId: { type: new GraphQLNonNull(GraphQLString) },
       },
       resolve(parent, args) {
         let hobby = new Hobby({
